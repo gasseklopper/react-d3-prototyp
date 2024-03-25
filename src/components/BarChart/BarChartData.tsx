@@ -3,9 +3,9 @@ import { csv } from 'd3-fetch'
 import { ascending } from 'd3-array'
 import BarChart from './BarChart'
 
-const parseNA = string => (string === 'NA' ? undefined : string)
+const parseNA = (string: string) => (string === 'NA' ? undefined : string)
 
-function type(d) {
+function type(d: { genre: any; revenue: string | number }) {
   return {
     genre: parseNA(d.genre),
     revenue: +d.revenue,
@@ -24,8 +24,7 @@ function prepareBarChartData(data: any[]) {
 }
 
 const BarChartData = () => {
-  const [barChartData, setBarChartData] = useState(null)
-
+  const [barChartData, setBarChartData] = useState<null | any[]>(null);
   useEffect(() => {
     csv('/static/data/barchart.csv', type).then(data => {
       const dataClean = filterData(data)
