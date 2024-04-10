@@ -1,20 +1,22 @@
 import { useEffect, useRef } from 'react'
-import { BaseType, select, Selection } from 'd3-selection';
+import { select } from 'd3-selection';
 import { max } from 'd3-array'
 import { scaleLinear, scaleBand } from 'd3-scale'
 import { axisLeft, axisBottom } from 'd3-axis'
+
+interface DataItem {
+    genre: string;
+    revenue: number;
+}
 
 // margin convention often used with D3
 const margin = { top: 80, right: 60, bottom: 80, left: 60 }
 const width = 600 - margin.left - margin.right
 const height = 600 - margin.top - margin.bottom
 
+
 const color = ['#f05440', '#d5433d', '#b33535', '#283250']
 
-interface DataItem {
-    genre: string;
-    revenue: number;
-}
 
 const BarChart: React.FC<{ data: DataItem[] }> = ({ data }) => {
     const d3svg = useRef<SVGSVGElement>(null)
@@ -31,9 +33,10 @@ const BarChart: React.FC<{ data: DataItem[] }> = ({ data }) => {
 
             // scales
             const xMax = max(data, (d: { revenue: number }) => d.revenue)
-            const defaultValue = 1
+            const defaultValue = 100
 
             const xMaxOrDefault = xMax || defaultValue; // Provide a default value if xMax is undefined
+
             const xScale = scaleLinear()
                 .domain([0, xMaxOrDefault])
                 .range([0, width]);
@@ -42,16 +45,7 @@ const BarChart: React.FC<{ data: DataItem[] }> = ({ data }) => {
                 .domain(data.map((d: { genre: any }) => d.genre))
                 .rangeRound([0, height])
                 .paddingInner(0.25)
-
-            // draw header
-            svg
-                .append('g')
-                .attr('class', 'bar-header')
-                .attr('transform', `translate(0, ${-margin.top / 2})`)
-                .append('text')
-                .append('tspan')
-                .text('Horizontal bar chart')
-
+            
             // draw bars
             svg
                 .selectAll('.bar')
@@ -60,9 +54,9 @@ const BarChart: React.FC<{ data: DataItem[] }> = ({ data }) => {
                 .append('rect')
                 .attr('class', 'bar')
                 .attr('y', (d: DataItem) => yScale(d.genre) || 0)
-                .attr('width', d => xScale(d.revenue))
+                .attr('width', d => xScale(d.revenue) * 1)
                 .attr('height', yScale.bandwidth())
-                .style('fill', function (d, i) {
+                .style('fill', function (_d, i) {
                     return color[i % 4] // use colors in sequence
                 })
 
@@ -75,6 +69,7 @@ const BarChart: React.FC<{ data: DataItem[] }> = ({ data }) => {
                 .call(xAxis)
 
             const yAxis = axisLeft(yScale).tickSize(0)
+
             svg
                 .append('g')
                 .attr('class', 'y axis')

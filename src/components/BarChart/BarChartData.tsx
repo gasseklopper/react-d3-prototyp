@@ -42,16 +42,12 @@ const BarChartData = () => {
   }, [])
 
   const handleLoadButtonClick1 = () => {
-    // Clear old data
     setBarChartData(null);
-    // Load new data
     loadBarChartData('/static/data/barchart2.csv');
   }
 
   const handleLoadButtonClick2 = () => {
-    // Clear old data
     setBarChartData(null);
-    // Load new data
     loadBarChartData('/static/data/barchart.csv');
   }
 
