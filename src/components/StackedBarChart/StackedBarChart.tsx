@@ -64,23 +64,20 @@ export const StackedBarGraph = ({ datasets, keys, colors }: any) => {
       .selectAll("rect")
       .data((layer) => layer)
       .join("rect")
-      .attr(
-        "x",
-        (sequence) => {
-          if (sequence.data) {
+      .attr("x", (sequence) => {
+        if (sequence.data) {
             const name = sequence.data.name.toString(); // Ensure name is a string
-            const type = sequence.data.type.toString(); // Ensure type is a string
-            const x0 = x0Scale(name);
-            const x1 = x1Scale(type);
-                  
-            // Check if both x0 and x1 are defined before performing addition
-            if (!isNaN(x0!) && !isNaN(x1!)) {
-              return x0! + x1!; // Use x0 as the starting point and add x1 as an offset
-            }
-          }
-          return 100; // Default value if sequence.data is undefined or either x0 or x1 is undefined
+            // const type = sequence.data.type.toString(); // Convert type to string
+            const x0 = x0Scale(name); // Get x0 position based on the category
+            // const x1 = x1Scale(type); // Get x1 position based on the subgroup
+    
+            // Check if both x0 and x1 are defined before returning the value
+            // if (!isNaN(x0!) && !isNaN(x1!)) {
+                return x0! + 25; // Combine x0 and x1 for the final x position
+            // }
         }
-      )
+        return 110; // Default value if sequence.data is undefined or either x0 or x1 is undefined
+    })
       .attr("width", x1Scale.bandwidth())
       .attr("y", (sequence) => yScale(sequence[1]))
       .attr("height", (sequence) => yScale(sequence[0]) - yScale(sequence[1]));
@@ -100,63 +97,6 @@ export const StackedBarGraph = ({ datasets, keys, colors }: any) => {
         setData(filteredD);
       });
   }, [data, keys, colors]);
-
-// useEffect(() => {
-//     if (!wrapperRef.current || data.length === 0) return;
-  
-//     const svg = select(svgRef.current);
-//     const { width, height } = wrapperRef.current.getBoundingClientRect();
-  
-//     const stackGenerator = stack().keys(keys);
-//     const layers = stackGenerator(data);
-  
-//     const extent = [
-//       0,
-//       max(layers, (layer) => max(layer, (sequence) => sequence[1]))
-//     ];
-//     const filteredExtent = extent.filter((value) => typeof value === "number") as number[];
-//     const yScale = scaleLinear().domain(filteredExtent).range([height, 0]);
-  
-//     const x0Scale = scaleBand()
-//       .domain(data.map((d: any) => d.name))
-//       .range([0, width])
-//       .padding(0.1);
-  
-//     const x1Scale = scaleBand()
-//       .domain(keys)
-//       .range([0, x0Scale.bandwidth()])
-//       .padding(0.05);
-  
-//     const xAix = axisBottom(x0Scale);
-//     const yAix = axisLeft(yScale);
-  
-//     select(svgRef.current)
-//     .select(".x-axis")
-//     .attr("transform", `translate(0, ${height})`)
-//     .call(xAix as unknown as (selection: Selection<BaseType, any, any, any>) => void);
-  
-//     svg.select(".y-axis")
-//       .attr("transform", `translate(${0 + 25}, 0 )`)
-//       .call(yAix as unknown as (selection: Selection<BaseType, any, any, any>) => void);
-  
-//     svg.selectAll(".layer")
-//       .data(layers)
-//       .join("g")
-//       .attr("class", "layer")
-//       .attr("fill", (layer) => colors[layer.key])
-//       .selectAll("rect")
-//       .data((layer) => layer)
-//       .join("rect")
-//       .attr("x", (sequence) => {
-//         if (sequence.data) {
-//           return x0Scale(sequence.data.name) + x1Scale(sequence.key)!; // Ensure x1Scale(sequence.key) is not undefined
-//         }
-//         return 0;
-//       })
-//       .attr("y", (sequence) => yScale(sequence[1]))
-//       .attr("height", (sequence) => yScale(sequence[0]) - yScale(sequence[1]))
-//       .attr("width", x1Scale.bandwidth());
-//   }, [data, keys, colors]);
 
   return (
     <>
